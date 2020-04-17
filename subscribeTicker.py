@@ -1,7 +1,7 @@
 import uuid,json,time
 from collections import defaultdict
 import pandas as pd
-import asyncio,websockets,requests
+import asyncio, websockets, requests
 import re
 import datetime
 import numpy as np
@@ -67,7 +67,10 @@ async def handle_ticker(data,bid_vol_df, ask_vol_df, mid_vol_df):
 			bid_vol_df.loc[instrument_list[1], float(instrument_list[2])] = data['bid_iv']
 			ask_vol_df.loc[instrument_list[1], float(instrument_list[2])] = data['ask_iv']
 			mid_vol_df.loc[instrument_list[1], float(instrument_list[2])] = data['mark_iv']
-			if time < start_time + datetime.timedelta(seconds=5) :
+
+			localtime = datetime.datetime.now() - datetime.timedelta(hours= 8)
+			print("return time:"+str(time) + " local time" + str(localtime) + " time lag:"+ str((localtime- time).total_seconds()))
+			if localtime < start_time + datetime.timedelta(seconds=10) :
 				pass
 
 			else:
@@ -111,7 +114,7 @@ async def subscribe(subs,url,callback, bid_vol_df,ask_vol_df,mid_vol_df):
             	while True:
             		rsp = await websocket.recv()
             		data = rsp
-            		print(data)
+            		#print(data)
             		rsp = await callback(data, bid_vol_df, ask_vol_df, mid_vol_df)
 
         except Exception as e:
